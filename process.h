@@ -30,5 +30,7 @@ int create_process(void (*entry)());
 void terminate_process(int pid);
 pcb_t* get_current_process();
 void set_current_process(pcb_t* p);
+pcb_t* get_process_table();
+int get_max_process();
 
 #endif

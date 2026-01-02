@@ -52,3 +52,11 @@ pcb_t* get_current_process() {
 void set_current_process(pcb_t* p) {
     current = p;
 }
+
+pcb_t* get_process_table() {
+    return process_table;
+}
+
+int get_max_process() {
+    return MAX_PROCESS;
+}
