@@ -1,7 +1,6 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
-#include "process.h"
 
-void schedule();
+void schedule(void);
 
-#endif 
+#endif

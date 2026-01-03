@@ -1,36 +1,34 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "types.h"
 
-#define MAX_PROCESS 16
+#define MAX_PROCESS 8
 
 typedef enum {
-    CURRENT,
-    READY,
-    TERMINATED
-} process_state_t;
+    PROC_READY = 0,
+    PROC_RUNNING = 1,
+    PROC_TERMINATED = 2
+} proc_state_t;
 
-typedef struct context {
+typedef struct {
     uintptr_t sp;
     uintptr_t pc;
 } context_t;
 
-typedef struct pcb {
+typedef struct {
     int pid;
-    process_state_t state;
+    proc_state_t state;
     void* stack;
     context_t context;
-    struct pcb* next;
 } pcb_t;
 
-void process_init();
-int create_process(void (*entry)());
-void terminate_process(int pid);
-pcb_t* get_current_process();
-void set_current_process(pcb_t* p);
-pcb_t* get_process_table();
-int get_max_process();
+pcb_t* create_process(void (*entry)(void));
+void terminate_process(pcb_t* p);
+
+pcb_t* get_current_process(void);
+void   set_current_process(pcb_t* p);
+
+pcb_t* get_process_table(void);
 
 #endif

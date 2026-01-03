@@ -1,26 +1,41 @@
-static int last_index = -1;
+#include "scheduler.h"
+#include "process.h"
 
-void schedule(){
-    pcb_t* current = get_current_process();
+static int last = 0;
 
-    if(current != NULL){
-        if(current->state == CURRENT){
-            current->state = READY;
-        }
-    }
+// context_switch(old_sp_ptr, new_sp, new_pc)
+extern void context_switch(uintptr_t* old_sp, uintptr_t new_sp, uintptr_t new_pc);
 
+void schedule(void) {
     pcb_t* table = get_process_table();
-    int max = get_max_process();
+    pcb_t* cur = get_current_process();
 
-    for(int i=1;i<=max;i++){
-        int idx = (last_index+i) % max;
+    // Find next READY process (round robin)
+    for (int i = 0; i < MAX_PROCESS; i++) {
+        int idx = (last + i + 1) % MAX_PROCESS;
 
-        if(table[idx].pid != 0 && table[idx].state == READY){
-            table[idx].state = CURRENT;
-            set_current_process(&table[idx]);
-            last_index = idx;
+        if (table[idx].state == PROC_READY) {
+            pcb_t* next = &table[idx];
+            last = idx;
+
+            // mark states
+            if (cur && cur->state == PROC_RUNNING) {
+                cur->state = PROC_READY;
+            }
+            next->state = PROC_RUNNING;
+
+            // IMPORTANT: set current pointer before switching
+            set_current_process(next);
+
+            if (cur) {
+                context_switch(&cur->context.sp, next->context.sp, next->context.pc);
+            } else {
+                // first time: no current process to save
+                context_switch(0, next->context.sp, next->context.pc);
+            }
             return;
         }
     }
-    set_current_process(NULL);
+
+    // If no READY process found, do nothing (idle)
 }

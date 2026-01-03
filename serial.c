@@ -58,3 +58,4 @@ char serial_getc(void) {
     while (!serial_received());
     return inb(COM1);
 }
+

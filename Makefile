@@ -8,17 +8,24 @@ CFLAGS = -m32 -ffreestanding -O2 -Wall -Wextra -nostdinc \
 ASFLAGS = --32
 LDFLAGS = -m elf_i386
 
-OBJS = boot.o kernel.o serial.o string.o
+# add: memory/process/scheduler + switch (context switch)
+OBJS = boot.o kernel.o serial.o string.o memory.o process.o scheduler.o switch.o
 
 all: kernel.elf
 
 kernel.elf: $(OBJS)
 	$(LD) $(LDFLAGS) -T link.ld -o $@ $^
 
+# C files
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# Assembly files (AT&T syntax .S via gcc preprocessor)
 %.o: %.S
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Raw assembly (.s) via as (if you ever use)
+%.o: %.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 run: kernel.elf
