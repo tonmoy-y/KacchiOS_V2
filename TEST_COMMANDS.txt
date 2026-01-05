@@ -1,0 +1,138 @@
+===============================================
+  KacchiOS - Quick Test Commands
+===============================================
+
+## Prerequisites Check:
+1. WSL installed? Run: wsl --version
+2. QEMU installed? Run (in WSL): qemu-system-i386 --version
+3. GCC installed? Run (in WSL): gcc --version
+
+## Build Commands (Run in WSL terminal):
+cd "/mnt/e/SEMESTER/3-2 semester/CSE 3202 OS L/os project/KacchiOS_V2"
+make clean
+make
+make run
+
+===============================================
+  Interactive Commands (Inside KacchiOS)
+===============================================
+
+Test 1: Help Command
+--------------------
+Command: help
+Expected: List of available commands
+
+Test 2: Empty Process List
+---------------------------
+Command: ps
+Expected: Empty list (no processes)
+
+Test 3: Create Processes
+-------------------------
+Command: demo start
+Expected: [demo] background processes started
+
+Test 4: View Processes
+----------------------
+Command: ps
+Expected:
+PID  STATE
+ 1   READY (or RUNNING)
+ 2   READY (or RUNNING)
+
+Test 5: Check Scheduling (wait a bit and repeat)
+-------------------------------------------------
+Command: ps
+Expected: Process states should change
+         One will be RUNNING, other READY
+         They will switch over time
+
+Test 6: Stop Processes
+----------------------
+Command: demo stop
+Expected: [demo] stopping background processes
+
+Test 7: Check Terminated
+------------------------
+Command: ps
+Expected:
+PID  STATE
+ 1   TERMINATED
+ 2   TERMINATED
+
+===============================================
+  Feature Verification Checklist
+===============================================
+
+✓ Process Creation:
+  - Run "demo start"
+  - Check "ps" shows 2 processes with PIDs
+
+✓ Memory Allocation:
+  - Each process gets its own 2KB stack
+  - Memory allocated from stack pool
+
+✓ Scheduling:
+  - Run "ps" multiple times
+  - Process states change (READY ↔ RUNNING)
+  - Round-robin switching visible
+
+✓ Process Termination:
+  - Run "demo stop"
+  - Processes become TERMINATED
+  - Stack memory freed back to pool
+
+===============================================
+  Advanced Testing
+===============================================
+
+Multiple Start/Stop Cycles:
+---------------------------
+1. demo start
+2. ps (note PIDs: 1, 2)
+3. demo stop
+4. ps (TERMINATED)
+5. demo start (PIDs will be 3, 4 - new PIDs!)
+6. ps
+7. demo stop
+
+This tests:
+- PID incrementing
+- Stack reallocation
+- Process table reuse
+
+===============================================
+  What Each File Does
+===============================================
+
+boot.S       - Bootloader entry (sets up stack, calls kmain)
+kernel.c     - Main loop, commands, user interface
+process.c    - Process creation/termination
+scheduler.c  - Round-robin scheduler
+memory.c     - Stack/heap allocation
+switch.s     - Context switching (assembly)
+serial.c     - UART/serial I/O
+string.c     - String utilities
+
+===============================================
+  Memory Map
+===============================================
+
+0x00000000 - 0x00100000  : Boot & Low Memory
+0x00100000 - 0x00110000  : Kernel Heap (64 KB)
+Stack Pool               : 16 stacks × 2KB each
+                          = 32 KB total
+
+Process Limits:
+- Max 8 processes (MAX_PROCESS)
+- Max 16 stacks (MAX_STACKS)
+- Each stack 2048 bytes (STACK_SIZE)
+
+===============================================
+  Exit KacchiOS
+===============================================
+
+To stop QEMU: Press Ctrl+A, then X
+(Hold Ctrl, press A, release both, then press X)
+
+===============================================

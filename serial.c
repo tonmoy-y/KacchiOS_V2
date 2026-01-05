@@ -59,3 +59,7 @@ char serial_getc(void) {
     return inb(COM1);
 }
 
+int serial_available(void) {
+    return serial_received();
+}
+

@@ -19,6 +19,7 @@ pcb_t* get_process_table(void) {
 
 pcb_t* create_process(void (*entry)(void)) {
     for (int i = 0; i < MAX_PROCESS; i++) {
+        // Find empty slot (pid==0) or TERMINATED process that can be reused
         if (process_table[i].pid == 0 || process_table[i].state == PROC_TERMINATED) {
 
             void* stack = stack_alloc();
@@ -46,4 +47,6 @@ void terminate_process(pcb_t* p) {
         stack_free(p->stack);
         p->stack = 0;
     }
+    // Don't clear PID - keep it for ps to show TERMINATED state
+    // PID will be overwritten when slot is reused
 }
