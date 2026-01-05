@@ -1,31 +1,74 @@
-# 🍚 kacchiOS
+# kacchiOS
 
-A minimal, educational baremetal operating system designed for teaching OS fundamentals.
+kacchiOS is a bare-metal operating system developed as part of the  
+**CSE 3202 (Operating Systems Sessional)** course at  
+**Rajshahi University of Engineering & Technology (RUET)**.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Platform](https://img.shields.io/badge/platform-x86-lightgrey.svg)]()
+The base operating system was provided with basic booting capability and a Null Process.  
+This project extends the base system by implementing core operating system components.
 
-## 📖 Overview
+---
 
-kacchiOS is a simple, bare-metal operating system built from scratch for educational purposes. It provides a clean foundation for students to learn operating system concepts by implementing core components themselves.
+## Project Objectives
 
-### Current Features
+The objective of this project is to understand and implement fundamental operating system concepts by extending a minimal bare-metal OS.
 
-- ✅ **Multiboot-compliant bootloader** - Boots via GRUB/QEMU
-- ✅ **Serial I/O driver** (COM1) - Communication via serial port
-- ✅ **Null process** - Single process that reads and echoes input
-- ✅ **Basic string utilities** - Essential string operations
-- ✅ **Clean, documented code** - Easy to understand and extend
+The following components were required:
+- Memory Management
+- Process Management
+- CPU Scheduling
 
-### Future Extensions (Student Assignments)
+---
 
-Students will extend kacchiOS by implementing:
-- 📝 **Memory Manager**
-- 📝 **Process Manager**
-- 📝 **Scheduler**
+## Implemented Components
 
-## 🚀 Quick Start
+### Memory Manager
+The memory manager handles memory allocation and deallocation for processes.
+
+- Stack memory allocation
+- Heap memory allocation
+- Stack deallocation on process termination
+- Heap deallocation on process termination
+
+**Files:** `memory.c`, `memory.h`
+
+---
+
+### Process Manager
+The process manager controls the lifecycle of processes in the system.
+
+- Process Control Block (PCB)
+- Global process table
+- Process creation
+- Process state transitions
+- Process termination
+
+**Process States:** `CURRENT`, `READY`, `TERMINATED`  
+
+**Files:** `process.c`, `process.h`
+
+---
+
+### Scheduler
+The scheduler determines which process gets CPU time.
+
+- Simple round-robin style scheduling
+- Context switching between processes
+- Low-level context switching using assembly
+
+**Files:** `scheduler.c`, `scheduler.h`, `switch.s`
+
+---
+
+## Boot and Kernel Execution Flow
+
+- System bootstrapping starts from `boot.S`
+- Kernel initialization is handled in `kernel.c`
+- Scheduler starts process execution after kernel setup
+
+---
+
+## Build Instructions
 
 ### Prerequisites
 
@@ -138,3 +181,4 @@ kacchiOS was created as an educational tool for teaching operating system concep
 - Inspired by XINU OS
 - Built with guidance from OSDev community
 - Thanks to all students who have contributed
+
