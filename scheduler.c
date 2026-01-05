@@ -1,26 +1,41 @@
-static int last_index = -1;
+#include "scheduler.h"
+#include "process.h"
 
-void schedule(){
-    pcb_t* current = get_current_process();
+static int last = -1;
 
-    if(current != NULL){
-        if(current->state == CURRENT){
-            current->state = READY;
-        }
-    }
+extern void context_switch(uintptr_t* old_sp, uintptr_t new_sp, uintptr_t new_pc);
 
+void schedule(void) {
     pcb_t* table = get_process_table();
-    int max = get_max_process();
+    pcb_t* cur = get_current_process();
 
-    for(int i=1;i<=max;i++){
-        int idx = (last_index+i) % max;
+    for (int i = 1; i <= MAX_PROCESS; i++) {
+        int idx = (last + i) % MAX_PROCESS;
 
-        if(table[idx].pid != 0 && table[idx].state == READY){
-            table[idx].state = CURRENT;
-            set_current_process(&table[idx]);
-            last_index = idx;
+        if (table[idx].pid != 0 && table[idx].state == PROC_READY) {
+            pcb_t* next = &table[idx];
+            last = idx;
+
+            if (cur && cur->state == PROC_RUNNING) {
+                cur->state = PROC_READY;
+            }
+
+            next->state = PROC_RUNNING;
+            set_current_process(next);
+
+            if (cur) {
+                context_switch(&cur->context.sp,
+                               next->context.sp,
+                               next->context.pc);
+            } else {
+                context_switch(0,
+                               next->context.sp,
+                               next->context.pc);
+            }
             return;
         }
     }
-    set_current_process(NULL);
+
+    /* idle */
+    set_current_process(0);
 }
